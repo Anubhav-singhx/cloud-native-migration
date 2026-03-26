@@ -1,40 +1,44 @@
 # ADR-001: Migration from Monolith to Microservices
 
-**Date:** 2024-01-15  
-**Status:** Accepted  
-**Deciders:** Engineering Team
+**Date:** 2026-03-20
+**Status:** Accepted
+**Author:** Anubhav Singh
+
+> **Context**: This is a portfolio project demonstrating production-grade
+> architectural thinking. ADRs document the reasoning behind each technical
+> decision as a real engineering team would.
 
 ---
 
 ## Context
 
-We have a Flask monolith (`monolith/app.py`) that handles authentication, 
-product management, order processing, and notifications in a single application 
-with a single SQLite database.
+This project starts with a Flask monolith (`monolith/app.py`) that handles
+authentication, product management, order processing, and notifications in a
+single application with a single SQLite database.
 
-As the application grows, we identified the following critical problems:
+The following critical problems were identified with this approach:
 
 ### Problems with the Monolith
 
-1. **Tight Coupling**: The order service directly imports and queries the Product 
+1. **Tight Coupling**: The order logic directly imports and queries the Product
    database model. Any change to the Product schema breaks Order logic.
 
-2. **Single Point of Failure**: If the monolith crashes, ALL functionality goes 
+2. **Single Point of Failure**: If the monolith crashes, ALL functionality goes
    down — auth, products, orders, and notifications simultaneously.
 
-3. **Cannot Scale Independently**: If product browsing gets 10x traffic during 
-   a sale, we have to scale the ENTIRE app including auth and order processing, 
+3. **Cannot Scale Independently**: If product browsing gets 10x traffic during
+   a sale, the ENTIRE app must be scaled including auth and order processing,
    wasting resources.
 
-4. **Technology Lock-in**: The entire app is Flask. We cannot use a different 
-   framework for a component that would benefit from it.
+4. **Technology Lock-in**: The entire app is Flask. No component can adopt a
+   different framework even if it would benefit from one.
 
-5. **Deployment Risk**: Any change to any part of the app requires a full 
-   redeployment. A bug in the notification service can take down the entire 
+5. **Deployment Risk**: Any change to any part of the app requires a full
+   redeployment. A bug in the notification code can take down the entire
    e-commerce platform.
 
-6. **Team Scalability**: Multiple engineers editing the same `app.py` file causes 
-   constant merge conflicts.
+6. **No Ownership Boundaries**: All logic lives in one file, making it hard to
+   reason about what belongs where as the codebase grows.
 
 ---
 
@@ -61,28 +65,29 @@ Each service:
 
 ### Positive
 - Independent deployment and scaling per service
-- Fault isolation: one service down doesn't affect others
-- Teams can own individual services
-- Each service can choose the best technology
+- Fault isolation: one service down does not affect others
+- Clear ownership boundaries per service
+- Each service can evolve its technology independently
 
 ### Negative
 - Increased operational complexity (more things to monitor)
-- Network latency between services (vs direct function calls)
+- Network latency between services (vs direct function calls in a monolith)
 - Distributed transactions are harder than local DB transactions
 - More infrastructure to manage
 
 ### Mitigation
-- Istio service mesh handles mTLS, retries, circuit breaking
+- Istio service mesh handles mTLS, retries, and circuit breaking
 - Jaeger distributed tracing makes cross-service debugging possible
 - Kubernetes handles deployment complexity
-- Prometheus + Grafana make monitoring manageable
+- Prometheus + Grafana make monitoring manageable at scale
 
 ---
 
 ## Alternatives Considered
 
-1. **Modular Monolith**: Split into Python modules but keep one deployment. 
-   Rejected: still scales as one unit, still single point of failure.
+1. **Modular Monolith**: Split into Python modules but keep one deployment.
+   Rejected — still scales as one unit and remains a single point of failure.
 
-2. **Serverless (Lambda)**: Each endpoint as a Lambda function. 
-   Rejected: cold start latency unacceptable for e-commerce, vendor lock-in too high.
+2. **Serverless (AWS Lambda)**: Each endpoint as a Lambda function.
+   Rejected — cold start latency is unacceptable for e-commerce, and
+   vendor lock-in is too high for a portable architecture.
