@@ -9,7 +9,7 @@ metadata:
     app: auth-service
     version: v1
 spec:
-  replicas: 2   # 2 replicas for HA
+  replicas: 1   # 2 replicas for HA
   selector:
     matchLabels:
       app: auth-service
@@ -86,7 +86,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: auth-service
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 5
   metrics:
   - type: Resource
