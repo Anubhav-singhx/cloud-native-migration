@@ -98,6 +98,7 @@ class StockUpdate(BaseModel):
     quantity: int  
 
 @app.get("/health")
+@app.get("/products/health")
 def health():
     return {"status": "healthy", "service": "product-service", "timestamp": datetime.utcnow().isoformat()}
 

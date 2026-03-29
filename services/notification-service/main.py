@@ -61,6 +61,7 @@ class NotificationCreate(BaseModel):
     notification_type: str = "general"
 
 @app.get("/health")
+@app.get("/notifications/health")
 def health():
     return {"status": "healthy", "service": "notification-service", "timestamp": datetime.utcnow().isoformat()}
 

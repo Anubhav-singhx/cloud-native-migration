@@ -81,7 +81,7 @@ resource "aws_eks_node_group" "spot" {
   # AWS can reclaim spot instances with 2-min notice
   # Kubernetes handles this gracefully by rescheduling pods
   capacity_type  = "SPOT"
-  instance_types = ["t3.small", "t3.medium"]  # Multiple types = better spot availability
+  instance_types = ["t3.small"]  # Multiple types = better spot availability
 
   scaling_config {
     desired_size = var.node_desired_size

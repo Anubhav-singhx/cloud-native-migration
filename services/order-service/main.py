@@ -113,6 +113,7 @@ class OrderCreate(BaseModel):
 # ─────────────────────────────────────────────
 
 @app.get("/health")
+@app.get("/orders/health")
 def health():
     return {"status": "healthy", "service": "order-service", "timestamp": datetime.utcnow().isoformat()}
 

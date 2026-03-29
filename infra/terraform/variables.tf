@@ -40,25 +40,25 @@ variable "availability_zones" {
 variable "node_instance_type" {
   description = "EC2 instance type for worker nodes (t3.micro = free tier eligible)"
   type        = string
-  default     = "t3.small"
+  default     = "t3.medium"
 }
 
 variable "node_desired_size" {
   description = "Desired number of worker nodes"
   type        = number
-  default     = 2
+  default     = 3
 }
 
 variable "node_min_size" {
   description = "Minimum worker nodes (for cost saving)"
   type        = number
-  default     = 2
+  default     = 3
 }
 
 variable "node_max_size" {
   description = "Maximum worker nodes (for scaling)"
   type        = number
-  default     = 4
+  default     = 5
 }
 
 variable "services" {

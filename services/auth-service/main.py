@@ -121,6 +121,7 @@ class ValidateResponse(BaseModel):
     user_id: int
     username: str
 @app.get("/health")
+@app.get("/auth/health")
 def health():
     return {"status": "healthy", "service": "auth-service", "timestamp": datetime.utcnow().isoformat()}
 
