@@ -40,8 +40,15 @@ jobs:
           kubectl set image deployment/$SERVICE \
             $SERVICE=$ECR_REGISTRY/$CLUSTER/$SERVICE:$IMAGE_TAG \
             -n production
+
           kubectl rollout status deployment/$SERVICE \
-            -n production --timeout=300s
+            -n production --timeout=600s
+
+          kubectl wait --for=delete pod \
+            -l app=$SERVICE \
+            -n production \
+            --timeout=120s || true
+
           echo "✅ $SERVICE deployed"
         done
 
