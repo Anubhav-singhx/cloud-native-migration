@@ -1,0 +1,68 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+    - name: Login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Deploy all services
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+        CLUSTER: ${{ secrets.EKS_CLUSTER_NAME }}
+      run: |
+        for SERVICE in auth-service product-service order-service notification-service; do
+          echo "🚀 Deploying $SERVICE"
+          kubectl set image deployment/$SERVICE \
+            $SERVICE=$ECR_REGISTRY/$CLUSTER/$SERVICE:$IMAGE_TAG \
+            -n production
+          kubectl rollout status deployment/$SERVICE \
+            -n production --timeout=300s
+          echo "✅ $SERVICE deployed"
+        done
+
+    - name: Run smoke tests
+      run: |
+        ALB_URL="k8s-producti-apigatew-841093a919-854161971.us-east-1.elb.amazonaws.com"
+        echo "🧪 Running smoke tests against $ALB_URL"
+        for ENDPOINT in "/auth/health" "/products/health" "/orders/health" "/notifications/health"; do
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://$ALB_URL$ENDPOINT)
+          if [ "$RESPONSE" != "200" ]; then
+            echo "❌ FAILED $ENDPOINT — got $RESPONSE"
+            exit 1
+          fi
+          echo "✅ $ENDPOINT returned 200"
+        done
+
+    - name: Rollback on failure
+      if: failure()
+      run: |
+        echo "❌ Deployment failed — rolling back"
+        for SERVICE in auth-service product-service order-service notification-service; do
+          kubectl rollout undo deployment/$SERVICE -n production
+          echo "🔄 Rolled back $SERVICE"
+        done

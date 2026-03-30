@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /services/auth-service
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directory: /services/product-service
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directory: /services/order-service
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directory: /services/notification-service
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
