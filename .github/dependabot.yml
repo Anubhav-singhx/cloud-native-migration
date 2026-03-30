@@ -3,24 +3,29 @@ updates:
   - package-ecosystem: pip
     directory: /services/auth-service
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /services/product-service
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /services/order-service
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 1
 
   - package-ecosystem: pip
     directory: /services/notification-service
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 1
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    open-pull-requests-limit: 1
