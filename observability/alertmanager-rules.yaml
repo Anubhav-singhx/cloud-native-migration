@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: microservices-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus
+spec:
+  groups:
+  - name: microservices
+    rules:
+    - alert: HighErrorRate
+      expr: |
+        sum(rate(http_requests_total{status_code=~"5.."}[5m])) by (service)
+        /
+        sum(rate(http_requests_total[5m])) by (service)
+        > 0.05
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High error rate on {{ $labels.service }}"
+
+    - alert: PodCrashLooping
+      expr: rate(kube_pod_container_status_restarts_total{namespace="production"}[15m]) > 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod {{ $labels.pod }} is crash looping"
+
+    - alert: HighLatency
+      expr: |
+        histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (service, le)) > 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High P95 latency on {{ $labels.service }}"

@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 
 from opentelemetry.sdk.resources import Resource
 
-provider = TracerProvider(
-    resource=Resource.create({"service.name": "product-service"})
-)
-provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=JAEGER_ENDPOINT, insecure=True)))
+grpc_endpoint = JAEGER_ENDPOINT.replace("http://", "").replace("https://", "")
+provider = TracerProvider(resource=Resource.create({"service.name": "product-service"}))
+provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=grpc_endpoint, insecure=True)))
+
 trace.set_tracer_provider(provider)
 tracer = trace.get_tracer(__name__)
 RequestsInstrumentor().instrument()

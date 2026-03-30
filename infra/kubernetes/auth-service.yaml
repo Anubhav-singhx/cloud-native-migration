@@ -39,7 +39,7 @@ spec:
         - name: SECRET_KEY
           value: prod-secret-key-use-secrets-manager-in-real-prod
         - name: JAEGER_ENDPOINT
-          value: http://jaeger:4317
+          value: "http://jaeger.monitoring.svc.cluster.local:4317"
         resources:
           requests:
             memory: "128Mi"
