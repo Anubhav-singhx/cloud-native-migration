@@ -190,10 +190,10 @@ cython_debug/
 
 # Ruff stuff:
 .ruff_cache/
-
+credentials-velero
 # PyPI configuration file
 .pypirc
-
+credentials-velero
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
