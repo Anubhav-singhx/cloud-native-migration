@@ -8,6 +8,8 @@ metadata:
     version: v1
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: order-service
@@ -17,13 +19,6 @@ spec:
         app: order-service
         version: v1
     spec:
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app: order-service
       containers:
       - name: order-service
         image: 697064446528.dkr.ecr.us-east-1.amazonaws.com/cloud-native-cluster/order-service:latest
