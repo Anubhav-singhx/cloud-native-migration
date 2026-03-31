@@ -1,8 +1,8 @@
 # Cloud-Native Architecture Migration
 ### Flask Monolith → FastAPI Microservices on AWS EKS
 
-[![CI Pipeline](https://github.com/YOUR_USERNAME/cloud-native-migration/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/cloud-native-migration/actions/workflows/ci.yml)
-[![CD Pipeline](https://github.com/YOUR_USERNAME/cloud-native-migration/actions/workflows/cd.yml/badge.svg)](https://github.com/YOUR_USERNAME/cloud-native-migration/actions/workflows/cd.yml)
+[![CI Pipeline](https://github.com/anubhav-singhx/cloud-native-migration/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/cloud-native-migration/actions/workflows/ci.yml)
+[![CD Pipeline](https://github.com/anubhav-singhx/cloud-native-migration/actions/workflows/cd.yml/badge.svg)](https://github.com/YOUR_USERNAME/cloud-native-migration/actions/workflows/cd.yml)
 
 > A production-grade migration from a Python Flask monolith to FastAPI
 > microservices deployed on AWS EKS with full observability, CI/CD,
