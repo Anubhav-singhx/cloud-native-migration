@@ -1,24 +1,26 @@
 # modules/ecr/main.tf
-# Creates ECR (Elastic Container Registry) repos for each microservice
-# ECR is private Docker registry managed by AWS
-
 resource "aws_ecr_repository" "services" {
-  for_each             = toset(var.services)
+  for_each = toset(var.services)
+
   name                 = "${var.cluster_name}/${each.value}"
   image_tag_mutability = "MUTABLE"
+  
+  # This allows Terraform to delete the repository even if it still contains images
+  force_delete = true
 
   image_scanning_configuration {
-    scan_on_push = true   # Automatically scan images for vulnerabilities on push
+    scan_on_push = true
   }
 
-  tags = { Name = "${var.cluster_name}-${each.value}" }
+  tags = {
+    Name = "${var.cluster_name}-${each.value}"
+  }
 }
 
-# Lifecycle policy: keep only the last 10 images to save storage costs
+# (lifecycle policy stays exactly the same)
 resource "aws_ecr_lifecycle_policy" "services" {
   for_each   = aws_ecr_repository.services
   repository = each.value.name
-
   policy = jsonencode({
     rules = [{
       rulePriority = 1
